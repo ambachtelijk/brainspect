@@ -1,0 +1,35 @@
+version: '3.1'
+
+services:
+
+  drupal:
+    build: .
+    volumes:
+      - ../app:/app
+      - ./apache.conf:/etc/apache2/sites-enabled/000-default.conf
+    depends_on:
+      - db
+    ports:
+      - 80:80
+    restart: always
+
+  db:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD:
+    volumes:
+      - ../mysql:/var/lib/mysql
+    restart: always
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    ports:
+      - 8080:80
